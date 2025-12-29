@@ -11,10 +11,10 @@ interface EnvVariables{
 type Mode = 'production' | 'development'
 
 export default (env: EnvVariables) => {
-
+    const isDev = env.mode === 'development'
     const config: webpack.Configuration = {
         mode: env.mode ?? 'development',
-        entry: path.resolve(__dirname, 'src', 'index.js'),
+        entry: path.resolve(__dirname, 'src', 'index.tsx'),
         output: {
             path: path.resolve(__dirname, 'build'),
             filename: 'bundle.[contenthash].js',
@@ -35,10 +35,11 @@ export default (env: EnvVariables) => {
         resolve: {
             extensions: ['.tsx', '.ts', '.js'],
         },
-        devServer: {
+        devtool: isDev ? 'inline-source-map' : false,
+        devServer: isDev ? {
             port: env.PORT || 5000,
             open: true
-        }
+        } : undefined,
     }
     
     return config;
