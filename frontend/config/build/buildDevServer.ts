@@ -8,6 +8,7 @@ type Params = {
 export function buildDevServer(params: Params):Configuration {
     return params.isDev ? {
             port: params.PORT || 5000,
-            open: true
+            open: true,
+            historyApiFallback: true
         } : undefined
 }
