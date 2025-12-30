@@ -1,7 +1,6 @@
-import './App.scss'
-
+import classes from './App.module.scss'
 export default function App() {
   return (
-    <div className="App">App</div>
+    <div className={classes.App}>App</div>
   )
 }

@@ -3,8 +3,21 @@ import { ModuleOptions } from "webpack"
 export function buildLoaders():ModuleOptions['rules'] {
     return [
         {
-            test:/\.s[ac]ss$/i,
-            use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'], 
+            test:/\.module.s[ac]ss$/i,
+            use: [MiniCssExtractPlugin.loader,
+                 {
+                    loader: 'css-loader',
+                    options: {
+                        modules: {
+                            localIdentName: '[name]__[local]--[hash:base64:5]',
+                            exportLocalsConvention: 'camelCase',
+                            namedExport: false,
+                        },
+                        esModule: true
+                    }
+                 },
+                'sass-loader'],
+
         },
         {
             test:/\.css$/i,
