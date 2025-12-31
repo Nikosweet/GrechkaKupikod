@@ -1,14 +1,14 @@
 import { Configuration } from "webpack-dev-server"
 
 type Params = {
-    isDev: boolean,
     PORT: number
 }
 
 export function buildDevServer(params: Params):Configuration {
-    return params.isDev ? {
+    return {
             port: params.PORT || 5000,
             open: true,
-            historyApiFallback: true
-        } : undefined
+            historyApiFallback: true,
+            hot: true
+        }
 }

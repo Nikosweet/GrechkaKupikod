@@ -7,6 +7,7 @@ import { buildWebpack } from './config/build/buildWebpack'
 export interface EnvVariables{
     mode: Mode
     PORT: number
+    platform: 'desktop' | 'mobile'
 }
 
 type Mode = 'production' | 'development'
@@ -19,9 +20,9 @@ const Paths = {
 }
 
 export default (env: EnvVariables) => {
-    const {mode, PORT} = env
+    const {mode, PORT, platform} = env
     const isDev = mode === 'development'
-    const config: webpack.Configuration = buildWebpack({mode, isDev, PORT, Paths })
+    const config: webpack.Configuration = buildWebpack({ mode, PORT, platform, isDev, Paths })
     
     return config;
 }

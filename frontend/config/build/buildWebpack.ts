@@ -4,6 +4,7 @@ import { buildPlugins } from './buildPlugins'
 import { buildLoaders } from './buildLoaders'
 import { buildDevServer } from './buildDevServer'
 import type { EnvVariables } from '../../webpack.config'
+import { platform } from 'node:os'
 
 interface Options extends EnvVariables {
     isDev: boolean
@@ -16,7 +17,7 @@ interface Options extends EnvVariables {
 }
 
 export function buildWebpack(options: Options): webpack.Configuration {
-    const {mode, PORT, isDev, Paths} = options
+    const {mode, PORT, platform, isDev, Paths} = options
     return {
         mode: mode ?? 'development',
         entry: Paths.entry,
@@ -25,9 +26,9 @@ export function buildWebpack(options: Options): webpack.Configuration {
             filename: 'bundle.[contenthash].js',
             clean: true
         },
-        plugins: buildPlugins(Paths.html),
+        plugins: buildPlugins(Paths.html, platform, isDev),
         module: {
-            rules: buildLoaders(),
+            rules: buildLoaders(isDev),
         },
         resolve: {
             extensions: ['.tsx', '.ts', '.js'],
@@ -36,6 +37,6 @@ export function buildWebpack(options: Options): webpack.Configuration {
              },
         },
         devtool: isDev ? 'inline-source-map' : false,
-        devServer: buildDevServer({isDev, PORT}),
+        devServer: buildDevServer({PORT}),
     }
 }

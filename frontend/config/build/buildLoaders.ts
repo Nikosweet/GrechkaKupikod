@@ -1,6 +1,8 @@
+import ReactRefreshTypeScript from 'react-refresh-typescript'
 import MiniCssExtractPlugin from "mini-css-extract-plugin"
+import { before } from "node:test"
 import { ModuleOptions } from "webpack"
-export function buildLoaders():ModuleOptions['rules'] {
+export function buildLoaders(isDev: boolean):ModuleOptions['rules'] {
     return [
         {
             test:/\.module.s[ac]ss$/i,
@@ -26,7 +28,15 @@ export function buildLoaders():ModuleOptions['rules'] {
         },
         {
             test: /\.tsx?$/,
-            use: 'ts-loader',
+            use: {
+                loader: 'ts-loader',
+                options: {
+                    transpileOnly: true,
+                    getCustomTransformers: () => ({
+                        before: [isDev && ReactRefreshTypeScript()].filter(Boolean)
+                    })
+                }
+            },
             exclude: /node_modules/,
         },
         {
@@ -34,8 +44,19 @@ export function buildLoaders():ModuleOptions['rules'] {
             type: 'asset/resource',
         },
         {
-            test: /\.svg$/,
-            use: ['@svgr/webpack'],
+            test: /\.svg$/i,
+            use: [
+                {
+                    loader: '@svgr/webpack', options: {
+                        icon: true, svgoConfig: {
+                            name: 'convertColors',
+                            params: {
+                                currentColor: true
+                            }
+                        }
+                    }
+                }
+            ],
         }
     ]
 }
