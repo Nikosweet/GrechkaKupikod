@@ -8,6 +8,10 @@
         "allowJs": true,
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["./src/*"],
+        },
         "esModuleInterop": true,
         "lib": ["ES2020", "DOM"],
         "forceConsistentCasingInFileNames": true,

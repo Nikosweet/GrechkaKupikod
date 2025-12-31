@@ -4,8 +4,9 @@ export function buildLoaders():ModuleOptions['rules'] {
     return [
         {
             test:/\.module.s[ac]ss$/i,
-            use: [MiniCssExtractPlugin.loader,
-                 {
+            use: [
+                MiniCssExtractPlugin.loader,
+                    {
                     loader: 'css-loader',
                     options: {
                         modules: {
@@ -15,9 +16,9 @@ export function buildLoaders():ModuleOptions['rules'] {
                         },
                         esModule: true
                     }
-                 },
-                'sass-loader'],
-
+                    },
+                'sass-loader'
+            ],
         },
         {
             test:/\.css$/i,
@@ -27,6 +28,10 @@ export function buildLoaders():ModuleOptions['rules'] {
             test: /\.tsx?$/,
             use: 'ts-loader',
             exclude: /node_modules/,
+        },
+        {
+            test: /\.(png|svg|jpg|jpeg\gif)$/i,
+            type: 'asset/resource',
         },
     ]
 }

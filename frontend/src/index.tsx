@@ -4,7 +4,7 @@ import './index.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Children } from 'react';
 import { Shop } from './pages/shop';
-import { About } from './pages/about';
+import { About } from '@/pages/about';
 
 const root = document.getElementById('root')
 

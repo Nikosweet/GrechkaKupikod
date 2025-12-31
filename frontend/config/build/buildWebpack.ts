@@ -11,7 +11,7 @@ interface Options extends EnvVariables {
         entry: string,
         output: string,
         html: string,
-
+        src: string
     }
 }
 
@@ -31,6 +31,9 @@ export function buildWebpack(options: Options): webpack.Configuration {
         },
         resolve: {
             extensions: ['.tsx', '.ts', '.js'],
+            alias: {
+                '@': options.Paths.src,
+             },
         },
         devtool: isDev ? 'inline-source-map' : false,
         devServer: buildDevServer({isDev, PORT}),
