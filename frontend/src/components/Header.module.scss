@@ -1,0 +1,41 @@
+.header {
+    background-color: rgba(137, 43, 226, 0.397);
+    height: 70px;
+    padding: 0px 10px;
+    display: flex;
+    align-items: center;
+    width: 100vw;
+}
+
+.headerList {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100vw;
+}
+
+.logo {
+    user-select: none;
+    -webkit-user-drag: none;
+    -moz-drag-over: none;
+}
+
+.catalog {
+    font-size: 20px;
+}
+
+.search {
+    width: 400px;
+    height: 30px;
+    border: 2px solid rgb(180, 179, 179);
+    border-radius: 10px;
+    padding-left: 7px;
+    
+}
+
+.icons {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    align-items: center;
+}

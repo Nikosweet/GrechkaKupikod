@@ -48,7 +48,9 @@ export function buildLoaders(isDev: boolean):ModuleOptions['rules'] {
             use: [
                 {
                     loader: '@svgr/webpack', options: {
-                        icon: true, svgoConfig: {
+                        icon: true,
+                        dimensions: false,
+                        svgoConfig: {
                             name: 'convertColors',
                             params: {
                                 currentColor: true
