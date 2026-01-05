@@ -6,7 +6,7 @@ export default function App() {
   return (
   <>
     <Header></Header>
-    <main><Outlet/></main>
+    <main className={classes.main}><Outlet/></main>
     <footer className={classes.footer}></footer>
   </>
     )
