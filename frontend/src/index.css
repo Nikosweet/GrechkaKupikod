@@ -128,12 +128,14 @@ h6 {
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: rgb(41, 40, 40);
 }
 
 #root {
-    background-color: rgb(41, 40, 40);
     min-height: 100vh;
     color: rgb(158, 154, 154);
     font-size: 14px;
+    width: 96vw;
+    margin: 0 auto;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
