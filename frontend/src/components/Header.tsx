@@ -21,8 +21,8 @@ export default function Header() {
           <li>
             <ul className={classes.icons}>            
               <a href='#' className={classes.profile}><Profile width={28}/></a>
-              <a href="" ><Basket width={35} /></a>
-              <a className={classes.orders}><Box width={33}/></a>
+              <a href="#" ><Basket width={35} /></a>
+              <a href='#' className={classes.orders}><Box width={33}/></a>
             </ul>
           </li>
     
