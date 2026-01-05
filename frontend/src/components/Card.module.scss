@@ -1,0 +1,27 @@
+.Card {
+    width: 240px;
+    height: 442px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.image {
+    height: 320px;
+    width: 240px;
+}
+
+.price {
+    font-size: 20px;
+}
+
+
+.gradenreview {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+
+.grade {
+    margin-right: 5px;
+}

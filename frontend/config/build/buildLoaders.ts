@@ -1,6 +1,5 @@
 import ReactRefreshTypeScript from 'react-refresh-typescript'
 import MiniCssExtractPlugin from "mini-css-extract-plugin"
-import { before } from "node:test"
 import { ModuleOptions } from "webpack"
 export function buildLoaders(isDev: boolean):ModuleOptions['rules'] {
     return [
@@ -40,7 +39,7 @@ export function buildLoaders(isDev: boolean):ModuleOptions['rules'] {
             exclude: /node_modules/,
         },
         {
-            test: /\.(png|jpg|jpeg\gif)$/i,
+            test: /\.(png|jpg|jpeg|gif)$/i,
             type: 'asset/resource',
         },
         {
