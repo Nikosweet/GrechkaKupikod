@@ -1,23 +1,28 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, HTTPException, Response, Depends
 from authx import AuthX, AuthXConfig
-
+import pydantic
 app = FastAPI()
 
-config = AuthXConfig(
-    JWT_SECRET_KEY="your-secret-key",  # Change this!
-    JWT_TOKEN_LOCATION=["headers"],
-)
+config = AuthXConfig()
+config.JWT_SECRET_KEY="SECRET_KEY"
+config.JWT_ACCESS_COOKIE_NAME= "my_access_token"
+config.JWT_TOKEN_LOCATION=["cookies"]
 
-auth = AuthX(config=config)
-auth.handle_errors(app)
+
+security =  AuthX(config=config)
+
+class UserLoginSchema(pydantic.BaseModel):
+    username: str
+    password: str
 
 @app.post("/login")
-def login(username: str, password: str):
-    if username == "test" and password == "test":
-        token = auth.create_access_token(uid=username)
-        return {"access_token": token}
-    raise HTTPException(401, detail="Invalid credentials")
+def login(creds: UserLoginSchema, response: Response):
+    if creds.username == "test" and creds.password == "test":
+        token = security.create_access_token(uid="12345")
+        response.set_cookie(config.JWT_ACCESS_COOKIE_NAME, token)
+        return {"acess_token": token}
+    raise HTTPException(status_code=401, detail="idi nahuy")
 
-@app.get("/protected", dependencies=[Depends(auth.access_token_required)])
+@app.get("/protected", dependencies=[Depends(security.access_token_required)])
 def protected():
-    return {"message": "Hello World"}
+    return {"data": "TOP SECRET"}
