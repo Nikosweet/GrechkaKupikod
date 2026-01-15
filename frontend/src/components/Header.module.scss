@@ -59,7 +59,7 @@
     background-color: rgb(79, 41, 114);
 }
 
-.button {
+.searchbutton {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -71,4 +71,16 @@
     justify-content: space-between;
     gap: 25px;
     align-items: center;
+}
+
+.authButton {
+    padding: 0px 20px;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(85, 197, 100);
+    color: rgb(79, 41, 114);
+    border-radius: 10px;
+    height: 40px;
 }
