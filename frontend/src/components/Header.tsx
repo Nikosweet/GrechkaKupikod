@@ -13,11 +13,14 @@ export default function Header() {
   const ISAUTHORIZED = false;
   const [authComponent, setAuthComponent] = useState(<></>)
 
-  function AuthFormRender() {
-    setAuthComponent(Auth);
+  function authFormRender() {
+    setAuthComponent(<Auth isRegister={false} close={closeForm}></Auth>);
   }
-  function RegisterFormRender() {
-
+  function registerFormRender() {
+    setAuthComponent(<Auth isRegister={true} close={closeForm}></Auth>);
+  }
+  function closeForm() {
+    setAuthComponent(<></>)
   }
   return (
     <>
@@ -44,8 +47,8 @@ export default function Header() {
           ) : (
             <li>
               <ul className={classes.icons}>
-                <li><button className={classes.authButton} onClick={AuthFormRender}>Войти</button></li>
-                <li><button className={classes.authButton} onClick={RegisterFormRender}>Зарегистрироваться</button></li>
+                <li><button className={classes.authButton} onClick={authFormRender}>Войти</button></li>
+                <li><button className={classes.authButton} onClick={registerFormRender}>Зарегистрироваться</button></li>
               </ul>
             </li>
           )
