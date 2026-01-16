@@ -1,0 +1,1 @@
+export { LazyProduct as Product } from './Product.lazy'
