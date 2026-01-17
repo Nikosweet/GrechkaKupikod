@@ -1,9 +1,10 @@
 import classes from '@/pages/shop/Shop.module.scss'
+import Slider from '@/components/Slider'
 import Card from '@/components/Card'
 export default function Shop() {
   return (
     <>
-      <div className={classes.sliderHolder}>It's not ready right now</div>
+      <Slider></Slider>
       <ul className={classes.Cardholder}>
         <Card></Card>
         <Card></Card>
