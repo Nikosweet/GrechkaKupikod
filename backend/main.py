@@ -1,6 +1,7 @@
+import uvicorn
 from fastapi import FastAPI, HTTPException, Response, Depends
 from authx import AuthX, AuthXConfig
-import pydantic
+from models.User import UserLoginSchema
 app = FastAPI()
 
 config = AuthXConfig()
@@ -10,10 +11,6 @@ config.JWT_TOKEN_LOCATION=["cookies"]
 
 
 security =  AuthX(config=config)
-
-class UserLoginSchema(pydantic.BaseModel):
-    username: str
-    password: str
 
 @app.post("/login")
 def login(creds: UserLoginSchema, response: Response):
@@ -26,3 +23,7 @@ def login(creds: UserLoginSchema, response: Response):
 @app.get("/protected", dependencies=[Depends(security.access_token_required)])
 def protected():
     return {"data": "TOP SECRET"}
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", reload=True)
