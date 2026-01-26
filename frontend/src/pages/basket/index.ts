@@ -1,0 +1,1 @@
+export { LazyBasket as Basket } from './Basket.lazy'

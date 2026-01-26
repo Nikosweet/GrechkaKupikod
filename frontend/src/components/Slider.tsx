@@ -24,8 +24,8 @@ export default function Slider() {
                 <LeftArrow width={30}></LeftArrow>
             </button>
             <div className={classes.slides} style={{transform: `translateX(${-slide*50}%)`}}>
-                <img src={SliderPhoto1} alt="" className={classes.image}/>
-                <img src={SliderPhoto2} alt="" className={classes.image}/>
+                <img src={SliderPhoto1} alt="" className={classes.image} draggable="false"/>
+                <img src={SliderPhoto2} alt="" className={classes.image} draggable="false"/>
             </div>
             <button className={classes.rightArrow} onClick={handleRightArrow}>
                 <RightArrow width={30}></RightArrow>

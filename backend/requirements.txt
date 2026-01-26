@@ -1,0 +1,6 @@
+fastapi[standart]
+alembic
+asyncpg
+psycopg
+psycopg-binary
+sqlalchemy

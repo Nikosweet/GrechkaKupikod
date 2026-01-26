@@ -10,11 +10,16 @@
         align-items: center;
         justify-content: space-between;
         width: 200%;
+        transition: transform 1s;
         .image {
             border-radius: 40px;
             width: 100%;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            cursor: pointer;
         }
-        transition: transform 1s;
     }
     .leftArrow {
         cursor: pointer;
