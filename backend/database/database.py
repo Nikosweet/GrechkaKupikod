@@ -12,10 +12,7 @@ async_engine = create_async_engine(
 )
 
 
-session = async_sessionmaker(async_engine)
-
-async with session() as session:
-    await session
+session_factory = async_sessionmaker(async_engine)
 
 
 class Base(DeclarativeBase):
