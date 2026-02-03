@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session, sessionmaker, DeclarativeBase
 from sqlalchemy import URL, create_engine, text
-from models.db_url import settings
+from database_url import settings
 import asyncio
 
 async_engine = create_async_engine(
@@ -12,10 +12,12 @@ async_engine = create_async_engine(
 )
 
 
-async def get_table():
-    async with async_engine.connect() as conn:
-        res = await conn.execute(text("SELECT * FROM person"))
-        print(res.all())
+session = async_sessionmaker(async_engine)
 
-asyncio.run(get_table())
+async with session() as session:
+    await session
+
+
+class Base(DeclarativeBase):
+    pass
 
