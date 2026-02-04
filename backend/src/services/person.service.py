@@ -1,5 +1,5 @@
-from database import session_factory
-from database.models.user import PersonOrm
+from src.database import session_factory
+from src.database.models.person import PersonOrm
 
 async def add_person(name, password):
     person = PersonOrm(name, password)
@@ -7,4 +7,3 @@ async def add_person(name, password):
         session.add(person)
         await session.commit()
 
-add_person("Nikolay", "12345")

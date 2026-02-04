@@ -4,3 +4,6 @@ asyncpg
 psycopg
 psycopg-binary
 sqlalchemy
+pytest
+pytest-asyncio
+pytest-cov
