@@ -1,7 +1,8 @@
 import uvicorn
 from fastapi import FastAPI, HTTPException, Response, Depends
 from authx import AuthX, AuthXConfig
-from src.schemas.person import PersonLoginSchema
+from schemas.person import PersonLoginSchema
+
 app = FastAPI()
 
 config = AuthXConfig()

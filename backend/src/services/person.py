@@ -1,9 +1,13 @@
 from sqlalchemy import select
 from typing import Optional, List
 import bcrypt
-from src.database import session_factory
-from src.database.models.person import PersonOrm
-from src.schemas import PersonLoginSchema
+from database.database import session_factory
+from database.models.person import PersonOrm
+from schemas.person import PersonLoginSchema
+
+
+
+
 
 class PersonService:
     @classmethod
@@ -18,12 +22,15 @@ class PersonService:
 
 
     @classmethod
-    async def get_person(cls, name: str) -> Optional[PersonOrm]:
+    async def get_person(cls, name: str, session: Optional[AsyncSession] = None) -> Optional[PersonOrm]:
         stmt = select(PersonOrm).where(PersonOrm.name == name)
-        async with session_factory() as session:
-            res = await session.execute(stmt)
-            person = res.scalar_one_or_none()
-            return person
+        if session:
+            result = await session.execute(stmt)
+            return result.scalar_one_or_none()
+        else:
+            async with session_factory() as new_session:
+                result = await new_session.execute(stmt)
+                return result.scalar_one_or_none()
         
 
 
@@ -49,13 +56,15 @@ class PersonService:
 
     @classmethod
     async def delete_person(cls, name: str) -> bool:
-        person_to_delete = await cls.get_person(name)
-        if not person_to_delete:
-            raise ValueError(f"Пользователь с именем '{name}' не найден")
+
 
         async with session_factory() as session:
-            person_to_delete = await session.merge(person_to_delete)
-            session.delete(person_to_delete)
+            person = await cls.get_person(name, session=session)
+            
+            if not person:
+                return False
+            
+            await session.delete(person)
             await session.commit()
             return True
         
