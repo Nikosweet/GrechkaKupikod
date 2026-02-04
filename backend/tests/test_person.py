@@ -1,6 +1,8 @@
 import pytest
+import pytest_asyncio
 from contextlib import nullcontext
 from src.services.person import add_person
+
 
 class TestService:
     @pytest.mark.parametrize(
@@ -13,7 +15,7 @@ class TestService:
     )
     async def test_add_person(self, name, password, expectation):
         with expectation:
-            pass
+            assert 1
 
 class TestController:
     pass

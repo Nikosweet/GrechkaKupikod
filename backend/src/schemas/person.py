@@ -1,6 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class PersonLoginSchema(BaseModel):
-    username: str
-    password: str
+    name: str = Field(min_length=3, max_length=25)
+    password: str = Field(max_length=72)
     

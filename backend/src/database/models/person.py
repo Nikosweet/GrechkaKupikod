@@ -8,6 +8,6 @@ class PersonOrm(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(25), unique=True)
-    password: Mapped[str] = mapped_column(String(32))
+    hashpassword: Mapped[str] = mapped_column(String(72))
     email: Mapped[Optional[str]] =  mapped_column(String(50), unique=True, nullable=True)
     phone: Mapped[Optional[str]] = mapped_column(String(15), unique=True, nullable=True)
