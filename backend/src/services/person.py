@@ -66,8 +66,30 @@ class PersonService:
             return True
     
     @classmethod 
-    async def update_person(cls, PersonSchema):
-        pass
+    async def update_person(cls, name, new_data: PersonSchema):
+        async with session_factory() as session:
+            person_to_update = await cls.get_person(name)
+            if person_to_update:
+                update_data = new_data.dict(exclude_unset=True)
+                if 'password' in update_data:
+                    hashed_password = bcrypt.hashpw(
+                        update_data['password'].encode('utf-8'),
+                        bcrypt.gensalt(rounds=12)
+                    ).decode('utf-8')
+
+                update_data.update({"hashpassword": hashed_password})
+
+                for key, value in update_data.items():
+                    if hasattr(person_to_update, key):
+                        setattr(person_to_update, key, value)
+                session.add(person_to_update)
+                await session.commit()
+                await session.refresh(person_to_update)
+        
+                return person_to_update
+            print('Пользователь не найден!')
+
+
 
 
 
