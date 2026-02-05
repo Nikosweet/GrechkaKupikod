@@ -8,28 +8,26 @@ from database.models.person import PersonOrm
 from schemas.person import PersonSchema
 from services.person import PersonService
 
+from sqlalchemy.ext.asyncio import create_async_engine
 
 
+@pytest_asyncio.fixture(loop_scope='function')
+async def fixture_persons():
+    async with session_factory() as session:
+        hashed_password = bcrypt.hashpw(
+            '1234'.encode('utf-8'),
+            bcrypt.gensalt(rounds=12)
+        ).decode('utf-8')
 
-# @pytest_asyncio.fixture(loop_scope='function')
-# async def fixture_persons():
-#     async with session_factory() as session:
-#         hashed_password = bcrypt.hashpw(
-#             '1234'.encode('utf-8'),
-#             bcrypt.gensalt(rounds=12)
-#         ).decode('utf-8')
-
-#         person1 = PersonOrm(name="fixture_user1", hashpassword=hashed_password)
-#         person2 = PersonOrm(name="fixture_user2", hashpassword=hashed_password)
+        person1 = PersonOrm(name="fixture_user1", hashpassword=hashed_password)
+        person2 = PersonOrm(name="fixture_user2", hashpassword=hashed_password)
         
-#         session.add_all([person1, person2])
-#         await session.commit()
-#         await session.refresh(person1)
-#         await session.refresh(person2)
+        session.add_all([person1, person2])
+        await session.commit()
+        await session.refresh(person1)
+        await session.refresh(person2)
         
-#         return [person1, person2]
-
-fixture_persons = [1,2]
+        return [person1, person2]
 
 @pytest.mark.asyncio
 class TestService:
@@ -76,3 +74,5 @@ class TestService:
 
 class TestController:
     pass
+
+
