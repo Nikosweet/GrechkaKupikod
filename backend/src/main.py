@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI, HTTPException, Response, Depends
 from authx import AuthX, AuthXConfig
-from schemas.person import PersonLoginSchema
+from schemas.person import PersonSchema
 
 app = FastAPI()
 
@@ -14,7 +14,7 @@ config.JWT_TOKEN_LOCATION=["cookies"]
 security =  AuthX(config=config)
 
 @app.post("/login")
-def login(creds: PersonLoginSchema, response: Response):
+def login(creds: PersonSchema, response: Response):
     if creds.username == "test" and creds.password == "test":
         token = security.create_access_token(uid="12345")
         response.set_cookie(config.JWT_ACCESS_COOKIE_NAME, token)

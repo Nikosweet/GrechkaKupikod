@@ -3,10 +3,7 @@ from typing import Optional, List
 import bcrypt
 from database.database import session_factory
 from database.models.person import PersonOrm
-from schemas.person import PersonLoginSchema
-
-
-
+from schemas.person import PersonSchema
 
 
 class PersonService:
@@ -35,7 +32,7 @@ class PersonService:
 
 
     @classmethod
-    async def add_person(cls, person_data: PersonLoginSchema) -> PersonOrm:
+    async def add_person(cls, person_data: PersonSchema) -> PersonOrm:
         existing_person = await cls.get_person(person_data.name)
 
         if existing_person:
@@ -67,13 +64,16 @@ class PersonService:
             await session.delete(person)
             await session.commit()
             return True
-        
+    
+    @classmethod 
+    async def update_person(cls, PersonSchema):
+        pass
 
 
 
 
     @classmethod
-    async def verify_password(cls, person_data: PersonLoginSchema) -> bool:
+    async def verify_password(cls, person_data: PersonSchema) -> bool:
         person = await cls.get_person(person_data.name)
         if not person:
             return False
