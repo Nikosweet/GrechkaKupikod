@@ -42,7 +42,7 @@ class PersonController:
         )
 
         self.router.add_api_route(
-            '/',
+            '/{person_id}',
             self.update,
             methods=["PUT"],
             response_model=PersonSchema
@@ -67,6 +67,6 @@ class PersonController:
         return await PersonService.delete(person_id)
 
 
-    async def update(self, person: PersonSchema):
-        person = await PersonService.update(person)
+    async def update(self, person_id: int, person: PersonSchema):
+        person = await PersonService.update(person_id, person)
         return PersonSchema.model_validate(person)
