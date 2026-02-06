@@ -36,9 +36,9 @@ class PersonService:
         
     
         async with session_factory() as session:
-            existing_person = await new_session.execute(stmt)
+            existing_person = await session.execute(stmt)
 
-            if existing_person:
+            if existing_person.scalar_one_or_none():
                 raise ValueError(f"Пользователь с именем '{person_data.name}' уже существует")
             
             hashed_password = bcrypt.hashpw(

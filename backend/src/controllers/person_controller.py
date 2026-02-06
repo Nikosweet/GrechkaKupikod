@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
-from schemas.person import PersonSchema
-from services.person import PersonService
+from schemas.person import PersonSchema, PersonResponseSchema, PersonLoginSchema
+from services.person_service import PersonService
 from database.models.person import PersonOrm
 
 
@@ -51,16 +51,16 @@ class PersonController:
     async def get_all(self):
         persons = await PersonService.get_all()
         for person in persons:
-            person = PersonSchema.model_validate(person)
+            person = PersonResponseSchema.model_validate(person)
         return persons
 
     async def get(self, person_id: int):
         person = await PersonService.get(person_id)
-        return PersonSchema.model_validate(person)
+        return PersonResponseSchema.model_validate(person)
 
     async def add(self, person: PersonLoginSchema):
         person = await PersonService.add(person)
-        return PersonSchema.model_validate(person)
+        return PersonResponseSchema.model_validate(person)
             
 
     async def delete(self, person_id: int):
@@ -69,4 +69,4 @@ class PersonController:
 
     async def update(self, person_id: int, person: PersonSchema):
         person = await PersonService.update(person_id, person)
-        return PersonSchema.model_validate(person)
+        return PersonResponseSchema.model_validate(person)

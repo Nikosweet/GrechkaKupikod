@@ -5,13 +5,17 @@ from schemas.person import PersonSchema
 class JWTSettings(BaseSettings):
     JWT_SECRET_KEY: str
 
-    model_config = SettingsConfigDict(env_file='.env')
+    @property
+    def get_secret_key():
+        return JWT_SECRET_KEY
+
+    model_config = SettingsConfigDict(env_file='.env', extra='ignore')
 
 class AuthService:
     @classmethod
-    async def make_config(cls):
+    def make_config(cls):
         config = AuthXConfig()
-        config.JWT_SECRET_KEY=JWTSettings.JWT_SECRET_KEY
+        config.JWT_SECRET_KEY=JWTSettings.get_secret_key
         config.JWT_ACCESS_COOKIE_NAME= "access_token"
         config.JWT_TOKEN_LOCATION=["cookies"]
         return AuthX(config=config)
