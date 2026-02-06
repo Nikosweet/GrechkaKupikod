@@ -1,12 +1,16 @@
 import uvicorn
 from fastapi import FastAPI, HTTPException, Response, Depends
+from controllers.person import PersonController
 from services.auth import AuthService
 from schemas.person import PersonLoginSchema
 
 app = FastAPI()
 
 
+app.include_router(PersonController().router)
 security = AuthService.make_config
+
+
 
 @app.post("/login")
 def login(creds: PersonLoginSchema, response: Response):
