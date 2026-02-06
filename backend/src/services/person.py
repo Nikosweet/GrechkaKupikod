@@ -3,12 +3,11 @@ from typing import Optional, List
 import bcrypt
 from database.database import session_factory
 from database.models.person import PersonOrm
-from schemas.person import PersonSchema
-
+from schemas.person import PersonLoginSchema, PersonSchema
 
 class PersonService:
     @classmethod
-    async def get_persons(cls) -> List[PersonOrm]:
+    async def get_all(cls) -> List[PersonOrm]:
         stmt = select(PersonOrm)
         async with session_factory() as session:
             res = await session.execute(stmt)
@@ -19,8 +18,8 @@ class PersonService:
 
 
     @classmethod
-    async def get_person(cls, name: str, session: Optional[AsyncSession] = None) -> Optional[PersonOrm]:
-        stmt = select(PersonOrm).where(PersonOrm.name == name)
+    async def get(cls, id: int, session: Optional[AsyncSession] = None) -> Optional[PersonOrm]:
+        stmt = select(PersonOrm).where(PersonOrm.id == id)
         if session:
             result = await session.execute(stmt)
             return result.scalar_one_or_none()
@@ -32,19 +31,23 @@ class PersonService:
 
 
     @classmethod
-    async def add_person(cls, person_data: PersonSchema) -> PersonOrm:
-        existing_person = await cls.get_person(person_data.name)
-
-        if existing_person:
-            raise ValueError(f"Пользователь с именем '{person_data.name}' уже существует")
+    async def add(cls, person_data: PersonLoginSchema) -> PersonOrm:
+        stmt = select(PersonOrm).where(PersonOrm.name == person_data.name)
         
-        hashed_password = bcrypt.hashpw(
-            person_data.password.encode('utf-8'),
-            bcrypt.gensalt(rounds=12)
-        ).decode('utf-8')
-        
-        person = PersonOrm(name=person_data.name, hashpassword=hashed_password)
+    
         async with session_factory() as session:
+            existing_person = await new_session.execute(stmt)
+
+            if existing_person:
+                raise ValueError(f"Пользователь с именем '{person_data.name}' уже существует")
+            
+            hashed_password = bcrypt.hashpw(
+                person_data.password.encode('utf-8'),
+                bcrypt.gensalt(rounds=12)
+            ).decode('utf-8')
+
+            person = PersonOrm(name=person_data.name, hashpassword=hashed_password)
+
             session.add(person)
             await session.commit()
             await session.refresh(person)
@@ -52,11 +55,10 @@ class PersonService:
 
 
     @classmethod
-    async def delete_person(cls, name: str) -> bool:
-
+    async def delete(cls, id: int) -> bool:
 
         async with session_factory() as session:
-            person = await cls.get_person(name, session=session)
+            person = await cls.get(id, session=session)
             
             if not person:
                 return False
@@ -66,18 +68,11 @@ class PersonService:
             return True
     
     @classmethod 
-    async def update_person(cls, name, new_data: PersonSchema):
+    async def update(cls, id: int, new_data: PersonSchema):
         async with session_factory() as session:
-            person_to_update = await cls.get_person(name)
+            person_to_update = await cls.get(id)
             if person_to_update:
                 update_data = new_data.dict(exclude_unset=True)
-                if 'password' in update_data:
-                    hashed_password = bcrypt.hashpw(
-                        update_data['password'].encode('utf-8'),
-                        bcrypt.gensalt(rounds=12)
-                    ).decode('utf-8')
-
-                update_data.update({"hashpassword": hashed_password})
 
                 for key, value in update_data.items():
                     if hasattr(person_to_update, key):
@@ -95,8 +90,8 @@ class PersonService:
 
 
     @classmethod
-    async def verify_password(cls, person_data: PersonSchema) -> bool:
-        person = await cls.get_person(person_data.name)
+    async def verify_password(cls, person_data: PersonLoginSchema) -> bool:
+        person = await cls.get(person_data.name)
         if not person:
             return False
         
