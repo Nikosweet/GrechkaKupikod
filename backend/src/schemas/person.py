@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 class PersonSchema(BaseModel):
     id: int
@@ -6,7 +6,9 @@ class PersonSchema(BaseModel):
     email: str | None = Field(None, min_length=3, max_length=50)
     phone: str | None = Field(None, min_length=5, max_length=15)
 
-    
+    model_config = ConfigDict(from_attributes=True, extra='ignore')
+
+
 class PersonLoginSchema(BaseModel):
     name: str = Field(None, min_length=3, max_length=50)
     password: str = Field(max_length=72)

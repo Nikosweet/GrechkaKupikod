@@ -49,20 +49,24 @@ class PersonController:
         )
 
     async def get_all(self):
-        return PersonService.get_all()
-
+        persons = await PersonService.get_all()
+        for person in persons:
+            person = PersonSchema.model_validate(person)
+        return persons
 
     async def get(self, person_id: int):
-        return PersonService.get(person_id)
-
+        person = await PersonService.get(person_id)
+        return PersonSchema.model_validate(person)
 
     async def add(self, person: PersonLoginSchema):
-        return PersonService.add(person)
-
+        person = await PersonService.add(person)
+        return PersonSchema.model_validate(person)
+            
 
     async def delete(self, person_id: int):
-        return PersonService.delete(person_id)
+        return await PersonService.delete(person_id)
 
 
     async def update(self, person: PersonSchema):
-        return PersonService.update(person)
+        person = await PersonService.update(person)
+        return PersonSchema.model_validate(person)
