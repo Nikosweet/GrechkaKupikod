@@ -88,22 +88,3 @@ class PersonService:
 
 
 
-
-    @classmethod
-    async def verify_password(cls, person_data: PersonLoginSchema) -> bool:
-        person = await cls.get(person_data.name)
-        if not person:
-            return False
-        
-        try:
-
-            is_valid = bcrypt.checkpw(
-                person_data.password.encode('utf-8'),
-                person.hashpassword.encode('utf-8')
-            )
-            return is_valid
-            
-        except Exception as e:
-            print(f"Ошибка при проверке пароля для пользователя {name}: {e}")
-            return False
-

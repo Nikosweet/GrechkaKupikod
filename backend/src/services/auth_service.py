@@ -1,25 +1,90 @@
-from authx import AuthX, AuthXConfig
+from authx import AuthX, AuthXConfig, TokenPayload
+import bcrypt
+from datetime import datetime, timedelta
+from fastapi import Request, Response, HTTPException, Depends
+from sqlalchemy import select
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from schemas.person import PersonSchema
+from schemas.person import PersonSchema, PersonLoginSchema, PersonResponseSchema
+from database.models.person import PersonOrm
+from services.person_service import PersonService
+from database.database import session_factory
+from pathlib import Path
+
+BASE_DIR = Path(__file__).parent.parent
+ENV_PATH = BASE_DIR / ".env"
 
 class JWTSettings(BaseSettings):
     JWT_SECRET_KEY: str
 
     @property
-    def get_secret_key():
-        return JWT_SECRET_KEY
+    def get_secret_key(self):
+        return str(self.JWT_SECRET_KEY)
 
-    model_config = SettingsConfigDict(env_file='.env', extra='ignore')
+    model_config = SettingsConfigDict(env_file=f'{ENV_PATH}', extra='ignore')
 
 class AuthService:
+    config = AuthXConfig()
+    config.JWT_SECRET_KEY=JWTSettings().get_secret_key
+    config.JWT_COOKIE_CSRF_PROTECT = False
+
+
+    config.JWT_ACCESS_COOKIE_NAME='access_token'
+    config.JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
+
+    config.JWT_REFRESH_COOKIE_NAME='refresh_token'
+    config.JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=7)
+
+    config.JWT_TOKEN_LOCATION=["cookies"]
+    config.JWT_ACCESS_COOKIE_NAME="access_token"
+    config.JWT_REFRESH_COOKIE_NAME='refresh_token'
+    config.JWT_COOKIE_MAX_AGE = timedelta(minutes=15)
+
+
+
+    security = AuthX(config=config)
+
     @classmethod
-    def make_config(cls):
-        config = AuthXConfig()
-        config.JWT_SECRET_KEY=JWTSettings.get_secret_key
-        config.JWT_ACCESS_COOKIE_NAME= "access_token"
-        config.JWT_TOKEN_LOCATION=["cookies"]
-        return AuthX(config=config)
+    async def verify(cls, person_data: PersonLoginSchema) -> False | PersonOrm:
+        stmt = select(PersonOrm).where(PersonOrm.name == person_data.name)
+        async with session_factory() as session:
+            person = await session.execute(stmt)
+            person = person.scalar_one_or_none()
 
-    
+            if not person:
+                return False
 
+            try:
+                is_valid = bcrypt.checkpw(
+                    person_data.password.encode('utf-8'),
+                    person.hashpassword.encode('utf-8')
+                )
+                if is_valid:
+                    return PersonResponseSchema.model_validate(person)
+                return is_valid
+                
+            except Exception as e:
+                print(f"Ошибка при проверке пароля для пользователя {person_data.name}: {e}")
+                return False
+
+
+    @classmethod
+    async def refresh(cls, payload: TokenPayload, response: Response):
+        access_token = cls.security.create_access_token(uid=payload.sub)
+        cls.security.set_access_cookies(access_token, response)
+        return {"access_token": access_token}
     
+    @classmethod
+    async def login(cls, creds: PersonLoginSchema, response: Response):
+        false_or_person = await cls.verify(creds)
+
+        if false_or_person:
+
+            access_token = cls.security.create_access_token(uid=str(false_or_person.id))
+            cls.security.set_access_cookies(access_token, response)
+
+            refresh_token = cls.security.create_refresh_token(uid=str(false_or_person.id))
+            cls.security.set_refresh_cookies(refresh_token, response)
+
+            return {"token_type": "bearer", "access_token": access_token, "refresh_token": refresh_token, "uid": false_or_person.id}
+
+        raise HTTPException(status_code=401, detail="Incorrect username or password")

@@ -9,9 +9,9 @@ class PersonSchema(BaseModel):
 
 class PersonResponseSchema(PersonSchema):
     id: int
-    
+
     model_config = ConfigDict(from_attributes=True, extra='ignore')
 
 class PersonLoginSchema(BaseModel):
-    name: str = Field(None, min_length=3, max_length=50)
+    name: str = Field(min_length=3, max_length=50)
     password: str = Field(max_length=72)

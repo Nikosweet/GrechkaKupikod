@@ -1,28 +1,20 @@
 import uvicorn
-from fastapi import FastAPI, HTTPException, Response, Depends
+from fastapi import FastAPI, HTTPException, Depends
 from controllers.person_controller import PersonController
-from services.auth_service import AuthService
+from controllers.auth_controller import AuthController
 from schemas.person import PersonLoginSchema
 
 app = FastAPI()
 
 
 app.include_router(PersonController().router)
-security = AuthService.make_config()
+app.include_router(AuthController().router)
 
 
 
-@app.post("/login")
-def login(creds: PersonLoginSchema, response: Response):
-    if creds.username == "test" and creds.password == "test":
-        token = security.create_access_token(uid="12345")
-        response.set_cookie(config.JWT_ACCESS_COOKIE_NAME, token)
-        return {"acess_token": token}
-    raise HTTPException(status_code=401, detail="Incorrect username or password")
-
-@app.get("/protected", dependencies=[Depends(security.access_token_required)])
-def protected():
-    return {"data": "TOP SECRET"}
+# @app.get("/protected", dependencies=[Depends(security.access_token_required)])
+# def protected():
+#     return {"data": "TOP SECRET"}
 
 
 
