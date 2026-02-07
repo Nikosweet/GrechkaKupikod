@@ -3,7 +3,8 @@ from typing import List
 from schemas.person import PersonSchema, PersonResponseSchema, PersonLoginSchema
 from services.person_service import PersonService
 from database.models.person import PersonOrm
-
+from sqlalchemy.ext.asyncio import AsyncSession
+from database.database import get_session
 
 
 class PersonController:
@@ -13,30 +14,30 @@ class PersonController:
 
     def _register_routes(self):
         @self.router.get("/", response_model=List[PersonResponseSchema])
-        async def get_all():
-            persons = await PersonService.get_all()
+        async def get_all(session: AsyncSession = Depends(get_session)):
+            persons = await PersonService.get_all(session)
             for person in persons:
                 person = PersonResponseSchema.model_validate(person)
             return persons
 
 
         @self.router.get("/{person_id}", response_model=PersonResponseSchema)
-        async def get(person_id: int):
-            person = await PersonService.get(person_id)
+        async def get(person_id: int, session: AsyncSession = Depends(get_session)):
+            person = await PersonService.get(person_id, session)
             return PersonResponseSchema.model_validate(person)
 
 
         @self.router.post("/", response_model=PersonResponseSchema, status_code=status.HTTP_201_CREATED)
-        async def add(person: PersonLoginSchema):
-            person = await PersonService.add(person)
+        async def add(person: PersonLoginSchema, session: AsyncSession = Depends(get_session)):
+            person = await PersonService.add(person, session)
             return PersonResponseSchema.model_validate(person)
 
         @self.router.delete("/{person_id}", response_model=bool)
-        async def delete(person_id: int):
-            return await PersonService.delete(person_id)
+        async def delete(person_id: int, session: AsyncSession = Depends(get_session)):
+            return await PersonService.delete(person_id, session)
 
 
         @self.router.put("/{person_id}", response_model=PersonResponseSchema)
-        async def update(person_id: int, person: PersonSchema):
-            person = await PersonService.update(person_id, person)
+        async def update(person_id: int, person: PersonSchema, session: AsyncSession = Depends(get_session)):
+            person = await PersonService.update(person_id, person, session)
             return PersonResponseSchema.model_validate(person)

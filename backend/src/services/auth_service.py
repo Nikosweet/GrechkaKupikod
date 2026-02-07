@@ -1,13 +1,14 @@
 from authx import AuthX, AuthXConfig, TokenPayload
 import bcrypt
-from datetime import datetime, timedelta
+from datetime import timedelta
 from fastapi import Request, Response, HTTPException, Depends
 from sqlalchemy import select
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from schemas.person import PersonSchema, PersonLoginSchema, PersonResponseSchema
 from database.models.person import PersonOrm
 from services.person_service import PersonService
-from database.database import session_factory
+from sqlalchemy.ext.asyncio import AsyncSession
+from database.database import get_session
 from pathlib import Path
 
 BASE_DIR = Path(__file__).parent.parent
@@ -44,27 +45,26 @@ class AuthService:
     security = AuthX(config=config)
 
     @classmethod
-    async def verify(cls, person_data: PersonLoginSchema) -> False | PersonOrm:
+    async def verify(cls, person_data: PersonLoginSchema, session: AsyncSession = Depends(get_session)) -> False | PersonOrm:
         stmt = select(PersonOrm).where(PersonOrm.name == person_data.name)
-        async with session_factory() as session:
-            person = await session.execute(stmt)
-            person = person.scalar_one_or_none()
+        person = await session.execute(stmt)
+        person = person.scalar_one_or_none()
 
-            if not person:
-                return False
+        if not person:
+            return False
 
-            try:
-                is_valid = bcrypt.checkpw(
-                    person_data.password.encode('utf-8'),
-                    person.hashpassword.encode('utf-8')
-                )
-                if is_valid:
-                    return PersonResponseSchema.model_validate(person)
-                return is_valid
-                
-            except Exception as e:
-                print(f"Ошибка при проверке пароля для пользователя {person_data.name}: {e}")
-                return False
+        try:
+            is_valid = bcrypt.checkpw(
+                person_data.password.encode('utf-8'),
+                person.hashpassword.encode('utf-8')
+            )
+            if is_valid:
+                return PersonResponseSchema.model_validate(person)
+            return is_valid
+            
+        except Exception as e:
+            print(f"Ошибка при проверке пароля для пользователя {person_data.name}: {e}")
+            return False
 
 
     @classmethod
@@ -74,8 +74,8 @@ class AuthService:
         return {"access_token": access_token}
     
     @classmethod
-    async def login(cls, creds: PersonLoginSchema, response: Response):
-        false_or_person = await cls.verify(creds)
+    async def login(cls, creds: PersonLoginSchema, response: Response, session: AsyncSession = Depends(get_session)):
+        false_or_person = await cls.verify(creds, session)
 
         if false_or_person:
 
@@ -88,3 +88,9 @@ class AuthService:
             return {"token_type": "bearer", "access_token": access_token, "refresh_token": refresh_token, "uid": false_or_person.id}
 
         raise HTTPException(status_code=401, detail="Incorrect username or password")
+
+    @classmethod
+    async def logout(cls, response: Response):
+        response.delete_cookie("access_token")
+        response.delete_cookie("refresh_token")
+        return {"message": "Successfully logged out"}
