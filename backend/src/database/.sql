@@ -67,7 +67,7 @@ CREATE INDEX idx_product_categories_category ON product_categories(category_id);
 CREATE TABLE product_images (
     id SERIAL PRIMARY KEY,
     product_id INTEGER NOT NULL,
-    url VARCHAR(500) NOT NULL,
+    url VARCHAR(500) NOT NULL UNIQUE,
     is_main BOOLEAN DEFAULT FALSE,
     sort_order INTEGER DEFAULT 0,
     alt_text VARCHAR(40),

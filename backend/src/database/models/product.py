@@ -2,8 +2,6 @@ from sqlalchemy import  String, ForeignKey, DECIMAL, JSON
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from decimal import Decimal
 from database.database import Base
-from database.models.category import CategoryOrm
-from database.models.product_categories import ProductCategoryOrm
 
 
 class ProductOrm(Base):
@@ -28,17 +26,6 @@ class ProductOrm(Base):
 
     images: Mapped[List["ProductImageOrm"]] = relationship(cascade="all, delete-orphan",order_by="ProductImageOrm.sort_order")
 
-    @property
-    def main_image(self) -> Optional["ProductImageOrm"]:
-        for img in self.images:
-            if img.is_main:
-                return img
-        return self.images[0] if self.images else None
-
-
-    @property
-    def categories(self) -> List["CategoryOrm"]:
-        return [assoc.category for assoc in self.category_associations]
 
 
     

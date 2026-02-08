@@ -2,8 +2,7 @@ from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from typing import Optional, List
 from database.database import Base
-from database.models.product import ProductOrm
-from database.models.product_categories import ProductCategoryOrm
+
 class CategoryOrm(Base):
     __tablename__ = "categories"
 
@@ -17,7 +16,3 @@ class CategoryOrm(Base):
     children: Mapped[List["CategoryOrm"]] = relationship("CategoryOrm", back_populates='parent', foreign_keys=[parent_id])
 
     product_associations: Mapped[List["ProductCategoryOrm"]] = relationship(back_populates="category")
-
-    @property
-    def products(self) -> List["ProductOrm"]:
-        return [assoc.product for assoc in self.product_associations]

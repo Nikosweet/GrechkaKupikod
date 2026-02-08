@@ -7,7 +7,7 @@ class ProductImageOrm(Base):
     __tablename__ = 'product_images'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    url: Mapped[str] = mapped_column(String(500), nullable='false')
+    url: Mapped[str] = mapped_column(String(500), nullable='false', unique=True)
     is_main: Mapped[bool] = mapped_column(server_default='false')
     sort_order: Mapped[int] = mapped_column(server_default='0')
     alt_text: Mapped[str] = mapped_column(String(40))

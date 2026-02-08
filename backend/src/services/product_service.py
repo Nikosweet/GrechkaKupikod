@@ -4,11 +4,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database.models.product import ProductOrm
 
 class ProductService:
+
+
     @classmethod
     async def get_all(cls, session: AsyncSession):
         stmt = select(ProductOrm)
         products = await sesion.execute(stmt)
         return products.salars().all()
+
 
     @classmethod
     async def get(cls, product_id: int, session: AsyncSession):
@@ -19,7 +22,6 @@ class ProductService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='product not found')
         return product
         
-
 
     @classmethod
     async def create(cls, product, session: AsyncSession):

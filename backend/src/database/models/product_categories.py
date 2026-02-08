@@ -2,8 +2,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional
 from database.database import Base
-from database.models.category import CategoryOrm
-from database.models.product import ProductOrm
+
 
 class ProductCategoryOrm(Base):
 
