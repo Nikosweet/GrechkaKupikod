@@ -2,6 +2,7 @@ from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.database import Base
 from database.moels.product import ProductOrm
+
 class ProductImageOrm(Base):
     __tablename__ = 'product_images'
 

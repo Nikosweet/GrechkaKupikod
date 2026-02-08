@@ -10,9 +10,6 @@ class ProductCategoryOrm(Base):
     __tablename__ = 'product_categories'
 
     product_id: Mapped[int] = mapped_column( ForeignKey("products.id"), primary_key=True)
-
     category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"), primary_key=True)
-
     product: Mapped["ProductOrm"] = relationship(back_populates="category_associations")
-    
     category: Mapped["CategoryOrm"] = relationship(back_populates="product_associations")
