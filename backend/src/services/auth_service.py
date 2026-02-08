@@ -1,13 +1,13 @@
 from authx import AuthX, AuthXConfig, TokenPayload
 import bcrypt
 from datetime import timedelta
-from fastapi import Request, Response, HTTPException, Depends, status
+from fastapi import Request, Response, HTTPException, status
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from schemas.person import PersonSchema, PersonLoginSchema, PersonResponseSchema
 from database.models.person import PersonOrm
 from services.person_service import PersonService
-from sqlalchemy.ext.asyncio import AsyncSession
 from pathlib import Path
 
 BASE_DIR = Path(__file__).parent.parent

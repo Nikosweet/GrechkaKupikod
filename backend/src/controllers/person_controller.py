@@ -23,21 +23,33 @@ class PersonController:
 
         @self.router.get("/{person_id}", response_model=PersonResponseSchema)
         async def get(person_id: int, session: AsyncSession = Depends(get_session)):
-            person = await PersonService.get(person_id, session)
-            return PersonResponseSchema.model_validate(person)
+            try:
+                person = await PersonService.get(person_id, session)
+                return PersonResponseSchema.model_validate(person)
+            except HTTPException:
+                raise
 
 
         @self.router.post("/", response_model=PersonResponseSchema, status_code=status.HTTP_201_CREATED)
-        async def add(person: PersonLoginSchema, session: AsyncSession = Depends(get_session)):
-            person = await PersonService.add(person, session)
-            return PersonResponseSchema.model_validate(person)
+        async def create(person: PersonLoginSchema, session: AsyncSession = Depends(get_session)):
+            try:
+                person = await PersonService.create(person, session)
+                return PersonResponseSchema.model_validate(person)
+            except HTTPException:
+                raise
 
         @self.router.delete("/{person_id}", response_model=bool)
         async def delete(person_id: int, session: AsyncSession = Depends(get_session)):
-            return await PersonService.delete(person_id, session)
+            try:
+                return await PersonService.delete(person_id, session)
+            except HTTPException:
+                raise
 
 
         @self.router.put("/{person_id}", response_model=PersonResponseSchema)
         async def update(person_id: int, person: PersonSchema, session: AsyncSession = Depends(get_session)):
-            person = await PersonService.update(person_id, person, session)
-            return PersonResponseSchema.model_validate(person)
+            try:
+                person = await PersonService.update(person_id, person, session)
+                return PersonResponseSchema.model_validate(person)
+            except HTTPException:
+                raise

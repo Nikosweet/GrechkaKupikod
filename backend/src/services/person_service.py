@@ -2,6 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, List
 import bcrypt
+from fastapi import HTTPException, status
 from database.database import session_factory
 from database.models.person import PersonOrm
 from schemas.person import PersonLoginSchema, PersonSchema
@@ -21,18 +22,21 @@ class PersonService:
     async def get(cls, id: int, session: AsyncSession) -> Optional[PersonOrm]:
         stmt = select(PersonOrm).where(PersonOrm.id == id)
         result = await session.execute(stmt)
-        return result.scalar_one_or_none()
+        person = result.scalar_one_or_none()
+        if not person:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
+        return person
         
 
 
     @classmethod
-    async def add(cls, person_data: PersonLoginSchema, session: AsyncSession) -> PersonOrm:
+    async def create(cls, person_data: PersonLoginSchema, session: AsyncSession) -> PersonOrm:
         stmt = select(PersonOrm).where(PersonOrm.name == person_data.name)
         
         existing_person = await session.execute(stmt)
 
         if existing_person.scalar_one_or_none():
-            raise ValueError(f"Пользователь с именем '{person_data.name}' уже существует")
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT ,detail=f"User '{person_data.name}' already exists")
             
         hashed_password = bcrypt.hashpw(
             person_data.password.encode('utf-8'),
@@ -49,19 +53,19 @@ class PersonService:
 
     @classmethod
     async def delete(cls, id: int, session: AsyncSession) -> bool:
-        person = await cls.get(id, session=session)
-        
-        if not person:
-            return False
-        
-        await session.delete(person)
-        await session.commit()
-        return True
+        try:
+            person = await cls.get(id, session=session)
+            await session.delete(person)
+            await session.commit()
+
+            return True
+        except HTTPException:
+            raise
     
     @classmethod 
     async def update(cls, id: int, new_data: PersonSchema, session: AsyncSession):
-        person_to_update = await cls.get(id)
-        if person_to_update:
+        try:
+            person_to_update = await cls.get(id)
             update_data = new_data.dict(exclude_unset=True)
 
             for key, value in update_data.items():
@@ -70,9 +74,10 @@ class PersonService:
             session.add(person_to_update)
             await session.commit()
             await session.refresh(person_to_update)
-    
+
             return person_to_update
-        print('Пользователь не найден!')
+        except HTTPException:
+            raise
 
 
 
