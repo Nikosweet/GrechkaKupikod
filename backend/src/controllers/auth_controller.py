@@ -15,19 +15,20 @@ class AuthController:
     def _register_routes(self):
         @self.router.post("/login")
         async def login(person: PersonLoginSchema, response: Response, session: AsyncSession = Depends(get_session)):
-            return await AuthService.login(person, response, session)
+            try:
+                return await AuthService.login(person, response, session)
+            except HTTPException:
+                raise
 
         @self.router.post("/refresh")
-        async def refresh(payload: TokenPayload = Depends(AuthService.security.refresh_token_required), response: Response = None):
-            return await AuthService.refresh(payload, response)
+        async def refresh(payload: TokenPayload = Depends(AuthService.security.refresh_token_required), response: Response = None, session: AsyncSession = Depends(get_session)):
+            return await AuthService.refresh(payload, response, session)
+
+
 
         @self.router.post('/logout')
-        async def logout(response: Response):
-            return await AuthService.logout(response)
-
-    async def verify(person: PersonLoginSchema):
-        isVerified = await AuthService.verify(person)
-        if isVerified:
-            return True
-        else:
-            return False
+        async def logout(response: Response, session: AsyncSession = Depends(get_session)):
+            try:
+                return await AuthService.logout(response, session)
+            except HTTPException:
+                raise

@@ -1,12 +1,13 @@
 import uvicorn
 from fastapi import FastAPI, HTTPException, Depends
+from middlewares.auth_middleware import AuthExceptionMiddleware
 from controllers.person_controller import PersonController
 from controllers.auth_controller import AuthController
 from schemas.person import PersonLoginSchema
 
 app = FastAPI()
 
-
+app.add_middleware(AuthExceptionMiddleware)
 app.include_router(PersonController().router)
 app.include_router(AuthController().router)
 
