@@ -1,4 +1,4 @@
-CREATE DATABASE Pisdata;
+CREATE DATABASE pisdata;
 
 CREATE TABLE person(
     id SERIAL PRIMARY KEY,
@@ -17,9 +17,7 @@ CREATE TABLE categories (
     CONSTRAINT fk_category_parent 
         FOREIGN KEY (parent_id) 
         REFERENCES categories(id) 
-        ON DELETE SET NULL,
-    
-    CONSTRAINT uq_category_slug UNIQUE (slug)
+        ON DELETE SET NULL
 );
 
 CREATE INDEX idx_categories_parent_id ON categories(parent_id);
@@ -37,9 +35,6 @@ CREATE TABLE products (
     review_count INTEGER DEFAULT 0,
     is_active BOOLEAN DEFAULT TRUE,
     specifications JSONB DEFAULT '{}'::jsonb,
-
-    CONSTRAINT uq_product_slug UNIQUE (slug),
-    CONSTRAINT uq_product_sku UNIQUE (sku)
 );
 
 CREATE INDEX idx_products_price ON products(price);

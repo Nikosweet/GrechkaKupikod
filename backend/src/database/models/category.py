@@ -10,25 +10,14 @@ class CategoryOrm(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30), unique=True, nullable=False)
     slug: Mapped[str] = mapped_column(String(30), unique=True, nullable=False)
-    parent_id: Mapped[Optional[int]] = mapped_column(ForeignKey("categories.id"), nullable=True)
+    parent_id: Mapped[Optional[int]] = mapped_column(ForeignKey("categories.id", ondelete='SET NULL'))
     
-    parent: Mapped[Optional["CategoryOrm"]] = relationship(
-        "CategoryOrm",
-        remote_side=[id],
-        back_populates='children',
-        foreign_keys=[parent_id]
-    )
+    parent: Mapped[Optional["CategoryOrm"]] = relationship("CategoryOrm", remote_side=[id], back_populates='children', foreign_keys=[parent_id])
 
-    children: Mapped[Optional["CategoryOrm"]] = relationship(
-        "CategoryOrm",
-        back_populates='parent',
-        foreign_keys=[parent_id]
-    )
+    children: Mapped[List["CategoryOrm"]] = relationship("CategoryOrm", back_populates='parent', foreign_keys=[parent_id])
 
-    product_associations: Mapped[List["ProductCategoryOrm"]] = relationship(
-        back_populates="category"
-    )
-    
+    product_associations: Mapped[List["ProductCategoryOrm"]] = relationship(back_populates="category")
+
     @property
     def products(self) -> List["ProductOrm"]:
         return [assoc.product for assoc in self.product_associations]
