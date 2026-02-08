@@ -35,12 +35,12 @@ class CategoriesService:
 
 
     @classmethod
-    async def delete(cls, category_id: int, session: AsyncSession):
+    async def delete(cls, category_id: int, session: AsyncSession) -> bool:
         try:
             category = await cls.get(category_id, session)
             session.delete(category)
-            session.commit()
-
+            await session.commit()
+            return True
         except HTTPException:
             raise
 
