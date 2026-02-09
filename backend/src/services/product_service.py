@@ -2,6 +2,7 @@ from fastapi import status, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from database.models.product import ProductOrm
+from schemas.product import ProductSchema
 
 class ProductService:
 
@@ -11,7 +12,6 @@ class ProductService:
         stmt = select(ProductOrm)
         products = await sesion.execute(stmt)
         return products.salars().all()
-
 
     @classmethod
     async def get(cls, product_id: int, session: AsyncSession):
@@ -24,7 +24,7 @@ class ProductService:
         
 
     @classmethod
-    async def create(cls, product, session: AsyncSession):
+    async def create(cls, product: ProductSchema, session: AsyncSession):
         stmt = select(ProductOrm).where(product.slug == ProductOrm.slug)
         res = await session.execute(stmt)
         product = res.scalar_one_or_none()
@@ -34,7 +34,6 @@ class ProductService:
         await session.commit()
         await sesion.refresh(product)
         return product
-
 
     @classmethod
     async def delete(cls, product_id: int, session: AsyncSession) -> bool:
@@ -48,7 +47,7 @@ class ProductService:
 
 
     @classmethod
-    async def update(cls, product_id: int, new_data, session: AsyncSession):
+    async def update(cls, product_id: int, new_data: ProductSchema, session: AsyncSession):
         try:
             product = await cls.get(product_id, session)
             update_data = new_data.dict(exclude_unset=True)

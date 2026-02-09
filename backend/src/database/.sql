@@ -29,7 +29,7 @@ CREATE TABLE products (
     slug VARCHAR(50) NOT NULL UNIQUE,
     description TEXT,
     price DECIMAL(10, 2) NOT NULL CHECK (price >= 0),
-    sku VARCHAR(50) UNIQUE,
+    sku VARCHAR(50) NOT NULL UNIQUE,
     brand VARCHAR(50),
     rating FLOAT DEFAULT 0.0 CHECK (rating >= 0 AND rating <= 5),
     review_count INTEGER DEFAULT 0,

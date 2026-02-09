@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession 
 from database.models.category import CategoryOrm
-
+from schemas.category import CategorySchema
 
 class CategoriesService:
     @classmethod
@@ -22,7 +22,7 @@ class CategoriesService:
         return category
 
     @classmethod
-    async def create(cls, category_data, session: AsyncSession):
+    async def create(cls, category_data: CategorySchema, session: AsyncSession):
         stmt = select(CategoryOrm).where(category_data.name == CategoryOrm.name | category_data.slug == CategoryOrm.slug)
         category = await session.execute(stmt)
         if category.scalar_one_or_none():
@@ -46,7 +46,7 @@ class CategoriesService:
 
 
     @classmethod
-    async def update(cls, category_id: int, new_data, session: AsyncSession):
+    async def update(cls, category_id: int, new_data: CategorySchema, session: AsyncSession):
         try:
             category = await cls.get(category_id, session)
             update_data = new_data.dict(exclude_unset=True)

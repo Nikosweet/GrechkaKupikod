@@ -24,7 +24,7 @@ class ProductOrm(Base):
 
     category_associations: Mapped[List["ProductCategoryOrm"]] = relationship(back_populates="product", cascade="all, delete-orphan")
 
-    images: Mapped[List["ProductImageOrm"]] = relationship(cascade="all, delete-orphan",order_by="ProductImageOrm.sort_order")
+    images: Mapped[List["ProductImageOrm"]] = relationship(back_populates="product", cascade="all, delete-orphan",order_by="ProductImageOrm.sort_order")
 
 
 
