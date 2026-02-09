@@ -3,6 +3,8 @@ from fastapi import FastAPI, HTTPException, Depends
 from middlewares.auth_middleware import AuthExceptionMiddleware
 from controllers.person_controller import PersonController
 from controllers.auth_controller import AuthController
+from controllers.product_controller import ProductController
+from controllers.category_controller import CategoryController
 from schemas.person import PersonLoginSchema
 
 app = FastAPI()
@@ -10,7 +12,8 @@ app = FastAPI()
 app.add_middleware(AuthExceptionMiddleware)
 app.include_router(PersonController().router)
 app.include_router(AuthController().router)
-
+app.include_router(CategoryController().router)
+app.include_router(ProductController().router)
 
 
 # @app.get("/protected", dependencies=[Depends(security.access_token_required)])

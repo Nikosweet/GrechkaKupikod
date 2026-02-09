@@ -4,7 +4,7 @@ from decimal import Decimal
 class ProductSchema(BaseModel):
     name: str = Field(min_length=2, max_length=50)
     slug: str = Field(min_length=2, max_length=50)
-    description: str | None = Field(None)
+    description: str | None
     price: Decimal = Field(gt=1, lt=100000000)
     brand: str = Field(min_length=2, max_length=50)
 
@@ -27,11 +27,4 @@ class ProductResponseSchema(ProductSchema):
 
 
 
-
-
-
-
-
-class ProductResponseSchema:
-    id: int
 
